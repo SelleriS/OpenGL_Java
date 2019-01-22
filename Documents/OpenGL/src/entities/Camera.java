@@ -6,31 +6,63 @@ import org.lwjgl.util.vector.Vector3f;
 public class Camera {
 
     private Vector3f position = new Vector3f(480f,5,280f);
-    private float pitch=10;
-    private float yaw =200;
-    private float roll;
+    private float pitch = 20;
+    private float yaw = 0;
+    private float roll = 0;
 
     public Camera() {
     }
 
-    public void move(){ // Key are in QWERTY!!
-        if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)){
-            position.z-=1f;
-        }
+    public void move(){ // Key's are in QWERTY!!
+        // Commented because keyboard is used for player movements
         if(Keyboard.isKeyDown(Keyboard.KEY_UP)){
-            position.z+=1f;
+            position.x += (float) (Math.sin(Math.toRadians(yaw)));
+            position.y -= (float) (Math.sin(Math.toRadians(pitch)));
+            position.z += (float) (-Math.cos(Math.toRadians(yaw)));
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)){
+            position.x -= (float) (Math.sin(Math.toRadians(yaw)));
+            position.y += (float) (Math.sin(Math.toRadians(pitch)));
+            position.z -= (float) (-Math.cos(Math.toRadians(yaw)));
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_LEFT)){
-            position.x+=1f;
+            yaw-=1f;
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT)){
-            position.x-=1f;
+            yaw+=1f;
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_Q)){
+            position.x -= (float) (Math.cos(Math.toRadians(yaw)));
+            //position.y -= (float) (Math.cos(Math.toRadians(roll)));
+            position.z -= (float) (Math.sin(Math.toRadians(yaw)));
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_W)){
+            position.x += (float) (Math.cos(Math.toRadians(yaw)));
+            //position.y += (float) (Math.cos(Math.toRadians(roll)));
+            position.z += (float) (Math.sin(Math.toRadians(yaw)));
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_Z)){
             position.y+=1f;
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_X)){
             position.y-=1f;
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_A)){
+            pitch-=1f;
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_S)){
+            pitch+=1f;
+        }
+        /*if(Keyboard.isKeyDown(Keyboard.KEY_C)){
+            roll-=1f;
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_V)){
+            roll+=1f;
+        }*/
+        if(Keyboard.isKeyDown(Keyboard.KEY_TAB)){
+            pitch = 0;
+            yaw = 0;
+            roll = 0;
         }
     }
 

@@ -3,6 +3,7 @@ package enigineTester;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import entities.Player;
 import models.TexturedModel;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
@@ -11,6 +12,8 @@ import models.RawModel;
 import shaders.StaticShader;
 import terrains.Terrain;
 import textures.ModelTexture;
+import textures.TerrainTexture;
+import textures.TerrainTexturePack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,14 +32,21 @@ public class MainGameLoop {
 
         RawModel treeModel = OBJLoader.loadObjModel("tree", loader);
         TexturedModel tree = new TexturedModel(treeModel, new ModelTexture(loader.loadTexture("tree")));
+
         RawModel grassModel = OBJLoader.loadObjModel("grassModel", loader);
         TexturedModel grass = new TexturedModel(grassModel, new ModelTexture(loader.loadTexture("grassTexture")));
         grass.getTexture().setHasTransparency(true);
         grass.getTexture().isUseFakeLighting();
+
         RawModel fernModel = OBJLoader.loadObjModel("fern", loader);
         TexturedModel fern = new TexturedModel(fernModel, new ModelTexture(loader.loadTexture("fern")));
         fern.getTexture().setHasTransparency(true);
         fern.getTexture().isUseFakeLighting();
+
+        RawModel lowPolyTreeModel = OBJLoader.loadObjModel("lowPolyTree", loader);
+        TexturedModel lowPolyTree = new TexturedModel(lowPolyTreeModel, new ModelTexture(loader.loadTexture("lowPolyTree")));
+        lowPolyTree.getTexture().setHasTransparency(true);
+        lowPolyTree.getTexture().isUseFakeLighting();
 
         // To add 500 randomly placed trees, grass and fern in the open world
         List<Entity> entities = new ArrayList<>();
@@ -48,31 +58,39 @@ public class MainGameLoop {
                     random.nextFloat() * 1500 + 50), 0, 0, 0, 1));
             entities.add(new Entity(fern, new Vector3f(random.nextFloat() * 1500 + 50, 0,
                     random.nextFloat() * 1500 + 50), 0, 0, 0, 0.6f));
+            entities.add(new Entity(lowPolyTree, new Vector3f(random.nextFloat() * 1500 + 50, 0,
+                    random.nextFloat() * 1500 + 50), 0, 0, 0, 0.6f));
         }
 
+        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
+        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
+        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
+        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
 
-        //To set sine and reflectivity
-        //ModelTexture texture = staticModel.getTexture();
-        //texture.setShineDamper(10);
-        //texture.setReflectivity(1);
-
-        Light light = new Light(new Vector3f(3000,2000,2000), new Vector3f(1,1,1));
+        TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
+        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
         //Generate terrain
         List<Terrain> terrains = new ArrayList<>();
         for(int x = 0; x < 2; x++){
             for(int z = 0; z < 2; z++){
-                terrains.add( new Terrain(x,z, loader, new ModelTexture(loader.loadTexture("grass"))));
+                terrains.add( new Terrain(x,z, loader, texturePack, blendMap));
             }
         }
 
         Camera camera = new Camera();
+        Light light = new Light(new Vector3f(3000,2000,2000), new Vector3f(1,1,1));
+
+
+        Player player = new Player(staticModel, new Vector3f(490f,5,300f), 0, 0, 0, 5);
 
         MasterRenderer renderer = new MasterRenderer();
         while(!Display.isCloseRequested()){
             camera.move();
+            player.move();
             //entity.increaseRotation(0, 1, 0);
-            renderer.processEntity(testEntity);
+            //renderer.processEntity(testEntity);
+            renderer.processEntity(player);
 
             for(Terrain terrain:terrains){
                 renderer.processTerrain(terrain);
